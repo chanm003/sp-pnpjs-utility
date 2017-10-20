@@ -14,7 +14,7 @@ export class SharepointContextService {
         this.devUserId = devUserId;
         this.environment = environment;
 
-         pnp.setup({
+        pnp.setup({
             sp: {
                 headers: {
                     'Accept': 'application/json; odata=verbose'
