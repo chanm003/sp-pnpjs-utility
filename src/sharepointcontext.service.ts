@@ -9,7 +9,7 @@ export class SharepointContextService {
 
     constructor() {}
 
-    setup(environment: {production: boolean}, devServerUrl: string, devUserId: number){
+    setup(environment: {production: boolean}, devServerUrl: string, devUserId: number) {
         this.devServerUrl = devServerUrl;
         this.devUserId = devUserId;
         this.environment = environment;
