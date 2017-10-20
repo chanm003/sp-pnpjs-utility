@@ -1,9 +1,4 @@
-export interface ISharepointDataTypeParseInstruction {
-    propName?: string;
-    parser?: string;
-    isReadOnly?: boolean;
-    dbColumnName?: string;
-}
+import { parser, HttpBodyParsers } from './httpBodyParser';
 
 export class SharePointItem {
     @select('Author/EMail,Author/Title')
@@ -37,7 +32,7 @@ export class SharePointItem {
 
         const parsers = this.constructor[getSymbol('parser')];
         parsers.forEach(instruction => {
-            (new SharepointDataTypeParsers[instruction.parser]()).fromStorage(json, this, instruction);
+            (new HttpBodyParsers[instruction.parser]()).fromHttpResponse(json, this, instruction);
         });
     }
 
@@ -49,12 +44,12 @@ export class SharePointItem {
         return getFieldsTagged(this, 'select');
     }
 
-    generateHttpRequestBody() {
+    toHttpRequestBody() {
         let reqBody = {};
         const parsers = this.constructor[getSymbol('parser')];
         parsers.forEach(instruction => {
             if (!instruction.isReadOnly) {
-                (new SharepointDataTypeParsers[instruction.parser]()).toStorage(this, reqBody, instruction);
+                (new HttpBodyParsers[instruction.parser]()).fromHttpRequest(this, reqBody, instruction);
             }
         });
         return reqBody;
@@ -70,35 +65,6 @@ export function select(queryName?: string): PropertyDecorator {   // this is the
 export function expand(expandName: string): PropertyDecorator {   // this is the decorator factory
     return function (target: any, propertyKey: string): void {      // this is the decorator
         setMetadata(target, 'expand', propertyKey, expandName);
-    };
-}
-
-export function parser(instruction: ISharepointDataTypeParseInstruction = { parser: 'Default', isReadOnly: true }):
-    PropertyDecorator {   // this is the decorator factory
-    return function (target: any, propertyKey: string): void {      // this is the decorator
-        if (!instruction.parser) { instruction.parser = 'Default'; }
-        if (instruction.isReadOnly === undefined) { instruction.isReadOnly = true; }
-
-        const sym: string = getSymbol('parser');
-        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string }[] = target.constructor[sym];
-        if (currentValues !== undefined) {
-            currentValues =
-                currentValues.concat([{
-                    propName: propertyKey,
-                    parser: instruction.parser,
-                    isReadOnly: instruction.isReadOnly,
-                    dbColumnName: instruction.dbColumnName
-                }]);
-        } else {
-            currentValues = [].concat({
-                propName: propertyKey,
-                parser: instruction.parser,
-                isReadOnly: instruction.isReadOnly,
-                dbColumnName: instruction.dbColumnName
-            });
-        }
-
-        target.constructor[sym] = currentValues;
     };
 }
 
@@ -145,30 +111,3 @@ function getFieldsTagged(constructor: any, parameter: string) {
     return list;
 }
 
-export namespace SharepointDataTypeParsers {
-    export interface ISharepointDataTypeParser {
-        fromStorage(source: any, destination: any, instruction: ISharepointDataTypeParseInstruction);
-        toStorage(source: any, destination: any, instruction: ISharepointDataTypeParseInstruction);
-    }
-
-    export class Default implements ISharepointDataTypeParser {
-        fromStorage(source: any, destination: any, instruction: ISharepointDataTypeParseInstruction) {
-            destination[instruction.propName] = source[instruction.dbColumnName || instruction.propName];
-        }
-
-        toStorage(source: any, destination: any, instruction: ISharepointDataTypeParseInstruction) {
-            destination[instruction.dbColumnName || instruction.propName] = source[instruction.propName];
-        }
-    }
-
-    export class DateTime implements ISharepointDataTypeParser {
-        fromStorage(source: any, destination: any, instruction: ISharepointDataTypeParseInstruction) {
-            destination[instruction.propName] = new Date(source[instruction.dbColumnName || instruction.propName]);
-        }
-
-        toStorage(source: any, destination: any, instruction: ISharepointDataTypeParseInstruction) {
-            const dt = source[instruction.propName] as Date;
-            destination[instruction.dbColumnName || instruction.propName] = (dt) ? dt.toISOString() : source[instruction.propName];
-        }
-    }
-}

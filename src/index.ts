@@ -4,6 +4,7 @@ import { SharepointContextService } from './sharepointcontext.service';
 
 export * from './sharepointitem.model';
 export * from './sharepointcontext.service';
+export * from './httpBodyParser';
 
 @NgModule({
   imports: [
