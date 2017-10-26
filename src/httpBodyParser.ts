@@ -58,7 +58,8 @@ export namespace HttpBodyParsers {
 
     export class DateTime implements IHttpBodyParser {
         fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
-            destination[instruction.propName] = new Date(source[instruction.dbColumnName || instruction.propName]);
+            const sourceValue = source[instruction.dbColumnName || instruction.propName]
+            destination[instruction.propName] = (!!sourceValue) ? new Date(sourceValue) : null;
         }
 
         fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
