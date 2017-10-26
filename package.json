@@ -73,6 +73,9 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
+    "@angular/http": "^4.4.6",
+    "@types/lodash": "^4.14.79",
+    "lodash": "^4.17.4",
     "sp-pnp-js": "^3.0.1"
   }
 }

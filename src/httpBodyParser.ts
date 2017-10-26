@@ -1,8 +1,11 @@
+import * as _ from 'lodash';
+
 export interface IHttpBodyParseInstruction {
     propName?: string;
     parser?: string;
     isReadOnly?: boolean;
     dbColumnName?: string;
+    lookupColumnName?: string;
 }
 
 export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Default', isReadOnly: true }):
@@ -12,21 +15,24 @@ export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Defau
         if (instruction.isReadOnly === undefined) { instruction.isReadOnly = true; }
 
         const sym: string = getSymbol('parser');
-        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string }[] = target.constructor[sym];
+        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string, lookupColumnName: string }[] = 
+            target.constructor[sym];
         if (currentValues !== undefined) {
             currentValues =
                 currentValues.concat([{
                     propName: propertyKey,
                     parser: instruction.parser,
                     isReadOnly: instruction.isReadOnly,
-                    dbColumnName: instruction.dbColumnName
+                    dbColumnName: instruction.dbColumnName,
+                    lookupColumnName: instruction.lookupColumnName
                 }]);
         } else {
             currentValues = [].concat({
                 propName: propertyKey,
                 parser: instruction.parser,
                 isReadOnly: instruction.isReadOnly,
-                dbColumnName: instruction.dbColumnName
+                dbColumnName: instruction.dbColumnName,
+                lookupColumnName: instruction.lookupColumnName
             });
         }
 
@@ -58,6 +64,49 @@ export namespace HttpBodyParsers {
         fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             const dt = source[instruction.propName] as Date;
             destination[instruction.dbColumnName || instruction.propName] = (dt) ? dt.toISOString() : source[instruction.propName];
+        }
+    }
+
+    export class NgxChips implements IHttpBodyParser {
+        fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            const sourceValue: any = source[instruction.dbColumnName || instruction.propName];
+            if  (sourceValue) {
+                if (sourceValue.__deferred) {
+                    destination[instruction.propName] = null;
+                } else {
+                    sourceValue.display = sourceValue[instruction.lookupColumnName || 'Id'];
+                    sourceValue.value = sourceValue['Id'];
+                    destination[instruction.propName] = [sourceValue];
+                }
+            }
+        }
+
+        fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            const sourceValue: any = source[instruction.propName];
+            const lookupId: number = (_.isArray(sourceValue) && sourceValue.length === 1) ? sourceValue[0].Id : null;
+            const columnName = (instruction.dbColumnName || instruction.propName) + 'Id';
+            destination[columnName] = lookupId;
+        }
+    }
+
+    export class NgxChipsMulti implements IHttpBodyParser {
+        fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            const sourceValue: any = source[instruction.dbColumnName || instruction.propName];
+
+            if (sourceValue && sourceValue.results) {
+                destination[instruction.propName] = _.map(sourceValue.results, (item: any) => {
+                    item.display = item[instruction.lookupColumnName || 'Id'];
+                    item.value = item['Id'];
+                    return item;
+                });
+            }
+        }
+
+        fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            const sourceValue: any = source[instruction.propName];
+            const lookupValues = _.map(sourceValue, (item: any) => item.Id);
+            const columnName = (instruction.dbColumnName || instruction.propName) + 'Id';
+            destination[columnName] = { results: lookupValues };
         }
     }
 }

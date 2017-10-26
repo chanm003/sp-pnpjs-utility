@@ -1,23 +1,19 @@
 import { parser, HttpBodyParsers } from './httpBodyParser';
 
 export class SharePointItem {
-    @select('Author/EMail,Author/Title')
+    @select('Author/EMail,Author/Id,Author/Title')
     @expand('Author')
     @parser()
-    Author: { Title: string, EMail: string };
-
-    @select()
-    @parser()
-    AuthorId: number;
+    Author: { Id: number, Title: string, EMail: string };
 
     @select()
     @parser({parser: 'DateTime'})
     Created: Date;
 
-    @select('Editor/EMail,Editor/Title')
+    @select('Editor/EMail,Editor/Id,Editor/Title')
     @expand('Editor')
     @parser()
-    Editor: { Title: string, EMail: string };
+    Editor: { Id: number, Title: string, EMail: string };
 
     @select()
     @parser()
