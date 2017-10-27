@@ -4,34 +4,23 @@ import 'rxjs/add/operator/map';
 import { Injectable } from '@angular/core';
 
 export interface ODataQueryConfiguration {
+    http: Http;
     fieldsToSelect: string[];
     fieldsToSearch: string[];
     url: string;
-    mapFunc: (item: any) => any;
+    mapFunc: (resp: Response) => any;
 }
 
 @Injectable()
 export class KeywordSearchService {
-    http: Http;
-    configuration: ODataQueryConfiguration;
-
     constructor() {}
-    setup = (http: Http, configuration: ODataQueryConfiguration) => {
-        this.http = http;
-        this.configuration = configuration;
-    }
-
-    search = (text: string): Observable<Response> => {
-        const selectOperation = this.configuration.fieldsToSelect.map(field => field).join(',');
-        const filterOperation = this.configuration.fieldsToSearch.map(field => {
+    search = (text: string, configuration: ODataQueryConfiguration): Observable<Response> => {
+        const selectOperation = configuration.fieldsToSelect.map(field => field).join(',');
+        const filterOperation = configuration.fieldsToSearch.map(field => {
             return `substringof('${text}',${field})`;
         }).join(' or ');
 
-        const url = `${this.configuration.url}?$select=${selectOperation}&$filter=${filterOperation}`;
-        return this.http.get(url).map((resp: Response) => {
-          const results = resp.json().d.results;
-          const mappedData = results.map(this.configuration.mapFunc);
-          return mappedData;
-        });
+        const url = `${configuration.url}?$select=${selectOperation}&$filter=${filterOperation}`;
+        return configuration.http.get(url).map(configuration.mapFunc);
       }
-} 
+}
