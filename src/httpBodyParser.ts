@@ -110,6 +110,19 @@ export namespace HttpBodyParsers {
             destination[columnName] = { results: lookupValues };
         }
     }
+
+    export class MultiChoice implements IHttpBodyParser {
+        fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            const sourceValue = source[instruction.dbColumnName || instruction.propName];
+            destination[instruction.propName] = (sourceValue && sourceValue.results) ? sourceValue.results : [];
+        }
+
+        fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            destination[instruction.dbColumnName || instruction.propName] = {
+                results: source[instruction.propName]
+            };
+        }
+    }
 }
 
 function getSymbol(key: string): string {
