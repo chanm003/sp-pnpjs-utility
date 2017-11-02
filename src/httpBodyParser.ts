@@ -15,7 +15,7 @@ export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Defau
         if (instruction.isReadOnly === undefined) { instruction.isReadOnly = true; }
 
         const sym: string = getSymbol('parser');
-        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string, lookupColumnName: string }[] = 
+        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string, lookupColumnName: string }[] =
             target.constructor[sym];
         if (currentValues !== undefined) {
             currentValues =
@@ -58,7 +58,7 @@ export namespace HttpBodyParsers {
 
     export class DateTime implements IHttpBodyParser {
         fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
-            const sourceValue = source[instruction.dbColumnName || instruction.propName]
+            const sourceValue = source[instruction.dbColumnName || instruction.propName];
             destination[instruction.propName] = (!!sourceValue) ? new Date(sourceValue) : null;
         }
 
