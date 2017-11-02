@@ -68,7 +68,7 @@ export namespace HttpBodyParsers {
         }
     }
 
-    export class NgxChips implements IHttpBodyParser {
+    export class Lookup implements IHttpBodyParser {
         fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             const sourceValue: any = source[instruction.dbColumnName || instruction.propName];
             if  (sourceValue) {
@@ -77,20 +77,20 @@ export namespace HttpBodyParsers {
                 } else {
                     sourceValue.display = sourceValue[instruction.lookupColumnName || 'Id'];
                     sourceValue.value = sourceValue['Id'];
-                    destination[instruction.propName] = [sourceValue];
+                    destination[instruction.propName] = sourceValue;
                 }
             }
         }
 
         fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             const sourceValue: any = source[instruction.propName];
-            const lookupId: number = (_.isArray(sourceValue) && sourceValue.length === 1) ? sourceValue[0].Id : null;
+            const lookupId: number = (!!sourceValue) ? sourceValue.Id : null;
             const columnName = (instruction.dbColumnName || instruction.propName) + 'Id';
             destination[columnName] = lookupId;
         }
     }
 
-    export class NgxChipsMulti implements IHttpBodyParser {
+    export class LookupMulti implements IHttpBodyParser {
         fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             const sourceValue: any = source[instruction.dbColumnName || instruction.propName];
 
