@@ -68,6 +68,26 @@ export namespace HttpBodyParsers {
         }
     }
 
+    export class JSON implements IHttpBodyParser {
+        fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            const sourceValue = source[instruction.dbColumnName || instruction.propName];
+            let parsedValue;
+            try {
+                parsedValue = (<any>window).JSON.parse(sourceValue || null);
+            } catch (e) {
+                parsedValue = null;
+            }
+            destination[instruction.propName] = parsedValue;
+        }
+
+        fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
+            let window: any;
+            const sourceValue = source[instruction.propName];
+            destination[instruction.dbColumnName || instruction.propName] =
+                (_.isArray(sourceValue) || _.isObject(sourceValue)) ? (<any>window).JSON.stringify(sourceValue) : null;
+        }
+    }
+
     export class Lookup implements IHttpBodyParser {
         fromHttpResponse(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             const sourceValue: any = source[instruction.dbColumnName || instruction.propName];
