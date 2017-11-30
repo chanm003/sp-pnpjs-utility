@@ -6,6 +6,7 @@ export interface IHttpBodyParseInstruction {
     isReadOnly?: boolean;
     dbColumnName?: string;
     lookupColumnName?: string;
+    parseLookupColumnAsArray?: boolean;
 }
 
 export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Default', isReadOnly: true }):
@@ -15,7 +16,8 @@ export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Defau
         if (instruction.isReadOnly === undefined) { instruction.isReadOnly = true; }
 
         const sym: string = getSymbol('parser');
-        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string, lookupColumnName: string }[] =
+        let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string, lookupColumnName: string,
+            parseLookupColumnAsArray: boolean }[] =
             target.constructor[sym];
         if (currentValues !== undefined) {
             currentValues =
@@ -24,7 +26,8 @@ export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Defau
                     parser: instruction.parser,
                     isReadOnly: instruction.isReadOnly,
                     dbColumnName: instruction.dbColumnName,
-                    lookupColumnName: instruction.lookupColumnName
+                    lookupColumnName: instruction.lookupColumnName,
+                    parseLookupColumnAsArray: instruction.parseLookupColumnAsArray
                 }]);
         } else {
             currentValues = [].concat({
@@ -32,7 +35,8 @@ export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Defau
                 parser: instruction.parser,
                 isReadOnly: instruction.isReadOnly,
                 dbColumnName: instruction.dbColumnName,
-                lookupColumnName: instruction.lookupColumnName
+                lookupColumnName: instruction.lookupColumnName,
+                parseLookupColumnAsArray: instruction.parseLookupColumnAsArray
             });
         }
 
@@ -97,14 +101,21 @@ export namespace HttpBodyParsers {
                 } else {
                     sourceValue.display = sourceValue[instruction.lookupColumnName || 'Id'];
                     sourceValue.value = sourceValue['Id'];
-                    destination[instruction.propName] = sourceValue;
+                    destination[instruction.propName] = instruction.parseLookupColumnAsArray ? [sourceValue] : sourceValue;
                 }
             }
         }
 
         fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             const sourceValue: any = source[instruction.propName];
-            const lookupId: number = (!!sourceValue) ? sourceValue.Id : null;
+            let lookupId: number;
+
+            if (instruction.parseLookupColumnAsArray) {
+                lookupId = (!!sourceValue && _.isArray(sourceValue) && sourceValue.length) ? sourceValue[0].Id : null;
+            } else {
+                lookupId = (!!sourceValue) ? sourceValue.Id : null;
+            }
+
             const columnName = (instruction.dbColumnName || instruction.propName) + 'Id';
             destination[columnName] = lookupId;
         }
