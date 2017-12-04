@@ -150,7 +150,7 @@ export namespace HttpBodyParsers {
 
         fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
             destination[instruction.dbColumnName || instruction.propName] = {
-                results: source[instruction.propName]
+                results: source[instruction.propName] || []
             };
         }
     }
