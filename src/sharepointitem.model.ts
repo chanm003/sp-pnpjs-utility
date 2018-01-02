@@ -1,22 +1,24 @@
 import { parser, HttpBodyParsers } from './httpBodyParser';
 
 export class SharePointItem {
+    static listName = '';
+
     @select('Author/EMail,Author/Id,Author/Title')
     @expand('Author')
-    @parser()
+    @parser({isReadOnly: true})
     Author: { Id: number, Title: string, EMail: string };
 
     @select()
-    @parser({parser: 'DateTime'})
+    @parser({parser: 'DateTime', isReadOnly: true})
     Created: Date;
 
     @select('Editor/EMail,Editor/Id,Editor/Title')
     @expand('Editor')
-    @parser()
+    @parser({isReadOnly: true})
     Editor: { Id: number, Title: string, EMail: string };
 
     @select()
-    @parser()
+    @parser({isReadOnly: true})
     Id: number;
 
     @select('Modified')
@@ -62,6 +64,12 @@ export function expand(expandName: string): PropertyDecorator {   // this is the
     return function (target: any, propertyKey: string): void {      // this is the decorator
         setMetadata(target, 'expand', propertyKey, expandName);
     };
+}
+
+export function listName(name: string) {
+    return function(target: any) {
+        target.listName = name;
+    }
 }
 
 function setMetadata(target: any, key: string, propName: string, queryName: string): void {

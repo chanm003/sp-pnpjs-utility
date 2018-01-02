@@ -9,11 +9,11 @@ export interface IHttpBodyParseInstruction {
     parseLookupColumnAsArray?: boolean;
 }
 
-export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Default', isReadOnly: true }):
+export function parser(instruction: IHttpBodyParseInstruction = { parser: 'Default', isReadOnly: false }):
     PropertyDecorator {   // this is the decorator factory
     return function (target: any, propertyKey: string): void {      // this is the decorator
         if (!instruction.parser) { instruction.parser = 'Default'; }
-        if (instruction.isReadOnly === undefined) { instruction.isReadOnly = true; }
+        if (instruction.isReadOnly === undefined) { instruction.isReadOnly = false; }
 
         const sym: string = getSymbol('parser');
         let currentValues: { propName: string, parser: string, isReadOnly: boolean, dbColumnName: string, lookupColumnName: string,
