@@ -52,6 +52,17 @@ export class SharePointItem {
         });
         return reqBody;
     }
+
+    getByParserType(parserType: string): string[] {
+        const fieldNames = [];
+        const parsers = this.constructor[getSymbol('parser')];
+        parsers.filter(instruction => {
+            if(instruction.parser === parserType) {
+                fieldNames.push(instruction.propName);
+            }
+        });
+        return fieldNames;
+    }
 }
 
 export function select(queryName?: string): PropertyDecorator {   // this is the decorator factory
