@@ -85,7 +85,6 @@ export namespace HttpBodyParsers {
         }
 
         fromHttpRequest(source: any, destination: any, instruction: IHttpBodyParseInstruction) {
-            let window: any;
             const sourceValue = source[instruction.propName];
             destination[instruction.dbColumnName || instruction.propName] =
                 (_.isArray(sourceValue) || _.isObject(sourceValue)) ? (<any>window).JSON.stringify(sourceValue) : null;
