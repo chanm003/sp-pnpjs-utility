@@ -43,7 +43,7 @@ export class SharePointItem {
     }
 
     toHttpRequestBody() {
-        let reqBody = {};
+        const reqBody = {};
         const parsers = this.constructor[getSymbol('parser')];
         parsers.forEach(instruction => {
             if (!instruction.isReadOnly) {
@@ -57,7 +57,7 @@ export class SharePointItem {
         const fieldNames = [];
         const parsers = this.constructor[getSymbol('parser')];
         parsers.filter(instruction => {
-            if(instruction.parser === parserType) {
+            if (instruction.parser === parserType) {
                 fieldNames.push(instruction.propName);
             }
         });
@@ -125,4 +125,3 @@ function getFieldsTagged(constructor: any, parameter: string) {
     }
     return list;
 }
-
