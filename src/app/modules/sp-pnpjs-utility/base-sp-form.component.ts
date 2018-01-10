@@ -1,13 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { OnInit } from '@angular/core';
 import { SPDataServiceContract } from './sp-data-service-contract';
 import { SPModel } from './sp-model';
 
-@Component({
-  selector: 'app-sp-pnpjs-utility-base-form',
-  template: `sp-pnpjs-utility base form component`
-})
 export class BaseSPFormComponent implements OnInit {
-  itemBeingEdited: SPModel = null;
+  itemBeingEdited: any = null;
 
   constructor(
     public dataService: SPDataServiceContract

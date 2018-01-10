@@ -1,13 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { OnInit } from '@angular/core';
 
 import { SPModel } from './sp-model';
 import { SPDataService } from './sp-data.service';
 import { SPDataServiceParams } from './sp-data-service-params';
 
-@Component({
-    selector: 'app-sp-pnpjs-utility-base-list',
-    template: `sp-pnpjs-utility base list component`
-})
 export class BaseSPListComponent implements OnInit {
     data: SPModel[];
 
@@ -45,3 +41,4 @@ export class BaseSPListComponent implements OnInit {
         this.listParams.filter = val;
     }
 }
+
