@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharepointContextService } from './sharepointcontext.service';
 import { BaseSPListComponent } from './base-sp-list.component';
 import { BaseSPFormComponent } from './base-sp-form.component';
+import { FakeSPDataService } from './sp-data.service';
 
 @NgModule({
   imports: [
@@ -17,7 +18,7 @@ export class SpPnpjsUtilityModule {
     return {
       ngModule: SpPnpjsUtilityModule,
       providers: [
-        SharepointContextService
+        SharepointContextService, FakeSPDataService
       ]
     };
   }
