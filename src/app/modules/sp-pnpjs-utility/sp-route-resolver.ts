@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { Resolve, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
@@ -8,7 +7,6 @@ import { SPRouteResolverContract } from './sp-route-resolver-contract';
 import { SPDataService } from './sp-data.service';
 import { SPModel } from './sp-model';
 
-@Injectable()
 export class SPRouteResolver implements Resolve<{item: SPModel}> {
   service: SPDataService;
   router: Router;

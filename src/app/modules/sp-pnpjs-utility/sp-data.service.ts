@@ -1,5 +1,3 @@
-import { Injectable } from '@angular/core';
-
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/map';
@@ -9,7 +7,6 @@ import { SPDataServiceContract } from './sp-data-service-contract';
 import { SPModel } from './sp-model';
 import { SPDataServiceParams } from './sp-data-service-params';
 
-@Injectable()
 export class SPDataService implements SPDataServiceContract {
     modelClass: typeof SPModel;
     sharepointContextService: SharepointContextService;
