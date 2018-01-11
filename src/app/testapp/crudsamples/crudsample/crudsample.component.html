@@ -1,0 +1,220 @@
+<h1>
+    {{ isNewForm() ? 'Add Employee' : 'Edit Existing Employee' }}
+  </h1>
+  
+  <form novalidate>
+    <section class="form-block">
+  
+      <!-- SINGLE LINE OF TEXT -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Name</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <input type="text" class="form-control" [(ngModel)]="itemBeingEdited.Name" name="Name" placeholder="Name">
+        </div>
+      </div>
+  
+      <!-- MULTIPLE LINES OF TEXT -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Biography</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <textarea [(ngModel)]="itemBeingEdited.Biography" name="Biography" rows="5" placeholder="Tell us about yourself"></textarea>
+        </div>
+      </div>
+  
+      <!-- YES/NO -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Is Married</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <clr-checkbox [(ngModel)]="itemBeingEdited.Married" name="Married">Yes</clr-checkbox>
+        </div>
+      </div>
+  
+      <!-- DATE -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>DateOfBirth</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <app-datepicker-clear-button [showClearButton]="!!itemBeingEdited.DateOfBirth" (clearDate)="itemBeingEdited.DateOfBirth = null"></app-datepicker-clear-button>
+          <p-calendar class="form-control" [(ngModel)]="itemBeingEdited.DateOfBirth" name="DateOfBirth"></p-calendar>
+        </div>
+      </div>
+  
+      <!-- NUMBER -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Number of Dependents</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <input class="form-control" type="number" [(ngModel)]="itemBeingEdited.NumberOfDependents" name="NumberOfDependents">
+        </div>
+      </div>
+  
+      <!-- CHOICE: DROPDOWN -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Main Course</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <div class="select">
+            <select [(ngModel)]="itemBeingEdited.MainCourse" name="MainCourse">
+              <option value=""></option>
+              <option value="Meat">Meat</option>
+              <option value="Seafood">Seafood</option>
+              <option value="Vegetarian">Vegetarian</option>
+            </select>
+          </div>
+        </div>
+      </div>
+  
+      <!-- CHOICE: RADIO -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Dessert</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <div class="radio">
+            <input type="radio" name="Dessert" [(ngModel)]="itemBeingEdited.Dessert" id="Ice Cream" value="Ice Cream">
+            <label for="Ice Cream">Ice Cream</label>
+          </div>
+          <div class="radio">
+            <input type="radio" name="Dessert" [(ngModel)]="itemBeingEdited.Dessert" id="Pie" value="Pie">
+            <label for="Pie">Pie</label>
+          </div>
+        </div>
+      </div>
+  
+      <!-- CHOICE: CHECKBOXES -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Side Dishes</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <app-checkbox-group [selectable]="sideDishChoices" [(ngModel)]="itemBeingEdited.SideDishes" name="SideDishes"></app-checkbox-group>
+        </div>
+      </div>
+  
+      <!-- LOOKUP -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Country of Primary Residence</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <tag-input [(ngModel)]="itemBeingEdited.PrimaryResidenceCountry" name="PrimaryResidenceCountry" [maxItems]="1" [ripple]="false"
+            [theme]="'bootstrap'" [secondaryPlaceholder]="'Search for Country'">
+            <tag-input-dropdown [minimumTextLength]="3" [autocompleteObservable]="getMatchingCountries">
+              <ng-template let-item="item" let-index="index">
+                {{ item.display }}
+              </ng-template>
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+      </div>
+  
+      <!-- LOOKUP (allow multiple) -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Countries Visited</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <tag-input class="form-control" [(ngModel)]="itemBeingEdited.CountriesVisited" name="CountriesVisited" [ripple]="false" [theme]="'bootstrap'"
+            [secondaryPlaceholder]="'Search for Countries'" [onlyFromAutocomplete]="true" [onTextChangeDebounce]="250">
+            <tag-input-dropdown [minimumTextLength]="3" [autocompleteObservable]="getMatchingCountries">
+              <ng-template let-item="item" let-index="index">
+                {{ item.display }}
+              </ng-template>
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+      </div>
+  
+      <!-- PERSON or GROUP -->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Supervisor</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <tag-input [(ngModel)]="itemBeingEdited.Supervisor" name="Supervisor" [maxItems]="1" [ripple]="false" [theme]="'bootstrap'"
+            [secondaryPlaceholder]="'Search for Supervisor'">
+            <tag-input-dropdown [minimumTextLength]="3" [autocompleteObservable]="getMatchingPeople">
+              <ng-template let-item="item" let-index="index">
+                {{ item.display }}
+              </ng-template>
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+      </div>
+  
+      <!-- PERSON or GROUP (allow multiple)-->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Colleagues</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <tag-input class="form-control" [(ngModel)]="itemBeingEdited.Colleagues" name="Colleagues" [ripple]="false" [theme]="'bootstrap'"
+            [secondaryPlaceholder]="'Search for Colleagues'" [onlyFromAutocomplete]="true" [onTextChangeDebounce]="250">
+            <tag-input-dropdown [minimumTextLength]="3" [autocompleteObservable]="getMatchingPeople">
+              <ng-template let-item="item" let-index="index">
+                {{ item.display }}
+              </ng-template>
+            </tag-input-dropdown>
+          </tag-input>
+        </div>
+      </div>
+  
+      <!-- JSON (multiple lines of text, plaintext column)-->
+      <div class="form-group row">
+        <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+          <label>Cars</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Model</th>
+                <th>Color</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of itemBeingEdited.Cars; let i = index">
+                <td>{{c.type}}</td>
+                <td>{{c.model}}</td>
+                <td>{{c.color}}</td>
+                <td>
+                  <clr-icon shape="trash" (click)="deleteCar(i)" title="Delete this record" class="is-highlight"></clr-icon>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-sm" type="button" (click)="createRandomCar()">Add Random Car</button>
+          
+        </div>
+      </div>
+  
+  
+    </section>
+    <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+    <button *ngIf="!isNewForm()" type="button" class="btn btn-danger" (click)="delete()">Delete</button>
+  </form>
+  
+  <div class="alert alert-info">
+    <div class="alert-items">
+      <div class="alert-item static">
+        <div class="alert-icon-wrapper">
+          <clr-icon class="alert-icon" shape="info-circle"></clr-icon>
+        </div>
+        <span class="alert-text">
+          <strong>DEBUG INFO:</strong>
+          <br> {{ itemBeingEdited | json}}
+        </span>
+      </div>
+    </div>
+  </div>
