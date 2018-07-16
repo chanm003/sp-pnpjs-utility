@@ -17,6 +17,7 @@
     "url": "https://github.com/chanm003/sp-pnpjs-utility/issues"
   },
   "scripts": {
+    "tsc": "tsc",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
